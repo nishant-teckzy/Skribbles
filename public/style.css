@@ -1,146 +1,193 @@
 /* Import Google font - Poppins */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-*{
+
+body{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-}
-body{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
   background: #4A98F7;
 }
-.container{
-  display: flex;
-  width: 100%;
-  gap: 10px;
-  padding: 10px;
-  max-width: 1050px;
-}
-section{
-  background: #fff;
-  border-radius: 7px;
-}
-.tools-board{
-  width: 210px;
-  padding: 15px 22px 0;
-}
-.tools-board .row{
-  margin-bottom: 20px;
-}
-.row .options{
-  list-style: none;
-  margin: 10px 0 0 5px;
-}
-.row .options .option{
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.option:is(:hover, .active) img{
-  filter: invert(17%) sepia(90%) saturate(3000%) hue-rotate(900deg) brightness(100%) contrast(100%);
-}
-.option :where(span, label){
-  color: #5A6168;
-  cursor: pointer;
-  padding-left: 10px;
-}
-.option:is(:hover, .active) :where(span, label){
-  color: #4A98F7;
-}
-.option #fill-color{
-  cursor: pointer;
-  height: 14px;
-  width: 14px;
-}
-#fill-color:checked ~ label{
-  color: #4A98F7;
-}
+
 .option #size-slider{
   width: 100%;
   height: 5px;
   margin-top: 10px;
 }
-.colors .options{
-  display: flex;
-  justify-content: space-between;
+#fill-color{
+  display:none;
 }
-.colors .option{
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  margin-top: 3px;
-  position: relative;
+
+#fill-color:checked + label .fill-color-span {
+  border: 2px solid #711313;
 }
-.colors .option:nth-child(1){
-  background-color: #fff;
-  border: 1px solid #bfbfbf;
+
+input[type=radio] {
+  display: none;
 }
-.colors .option:nth-child(2){
-  background-color: #000;
+input[type=color] {
+  display: none;
 }
-.colors .option:nth-child(3){
-  background-color: #E02020;
+input[type=radio]:checked + label span {
+  transform: scale(1.25);
 }
-.colors .option:nth-child(4){
-  background-color: #6DD400;
+input[type=radio]:checked + label .red {
+  border: 2px solid #711313;
 }
-.colors .option:nth-child(5){
-  background-color: #4A98F7;
+input[type=radio]:checked + label .orange {
+  border: 2px solid #873a08;
 }
-.colors .option.selected::before{
-  position: absolute;
-  content: "";
-  top: 50%;
-  left: 50%;
-  height: 12px;
-  width: 12px;
-  background: inherit;
-  border-radius: inherit;
-  border: 2px solid #fff;
-  transform: translate(-50%, -50%);
+input[type=radio]:checked + label .yellow {
+  border: 2px solid #816102;
 }
-.colors .option:first-child.selected::before{
-  border-color: #ccc;
+input[type=radio]:checked + label .olive {
+  border: 2px solid #505a0b;
 }
-.option #color-picker{
-  opacity: 0;
+input[type=radio]:checked + label .green {
+  border: 2px solid #0e4e1d;
+}
+input[type=radio]:checked + label .teal {
+  border: 2px solid #003633;
+}
+input[type=radio]:checked + label .blue {
+  border: 2px solid #103f62;
+}
+input[type=radio]:checked + label .violet {
+  border: 2px solid #321a64;
+}
+input[type=radio]:checked + label .purple {
+  border: 2px solid #501962;
+}
+input[type=radio]:checked + label .pink {
+  border: 2px solid #851554;
+}
+
+.color_label {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
   cursor: pointer;
 }
-.buttons button{
+.color_label:hover span {
+  transform: scale(1.25);
+}
+.color_label span {
+  display: block;
   width: 100%;
-  color: #fff;
-  border: none;
-  outline: none;
-  padding: 11px 0;
-  font-size: 0.9rem;
-  margin-bottom: 13px;
-  background: none;
-  border-radius: 4px;
-  cursor: pointer;
+  height: 100%;
+  transition: transform 0.2s ease-in-out;
 }
-.buttons .clear-canvas{
-  color: #6C757D;
-  border: 1px solid #6C757D;
-  transition: all 0.3s ease;
+.color_label span.red {
+  background: #DB2828;
 }
-.clear-canvas:hover{
-  color: #fff;
-  background: #6C757D;
+.color_label span.orange {
+  background: #F2711C;
 }
-.buttons .save-img{
+.color_label span.yellow {
+  background: #FBBD08;
+}
+.color_label span.olive {
+  background: #B5CC18;
+}
+.color_label span.green {
+  background: #21BA45;
+}
+.color_label span.teal {
+  background: #00B5AD;
+}
+.color_label span.blue {
+  background: #2185D0;
+}
+.color_label span.violet {
+  background: #6435C9;
+}
+.color_label span.purple {
+  background: #A333C8;
+}
+.color_label span.pink {
+  background: #E03997;
+}
+.color_label span.color-picker {
   background: #4A98F7;
-  border: 1px solid #4A98F7;
 }
+
+
 .drawing-board{
   flex: 1;
   overflow: hidden;
 }
-.drawing-board canvas{
+canvas{
   width: 100%;
   height: 100%;
 }
+
+
+
+
+
+
+
+/*/////////////////////////////////*/
+/*/////////  chat styles  /////////*/
+/*/////////////////////////////////*/
+.chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 95vh;
+        }
+        .chat-header, .chat-footer {
+            flex: 0 0 auto;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .chat-body {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 1rem;
+            background-color: #e9ecef;
+        }
+        .message {
+            margin-bottom: 1rem;
+        }
+        .message-sent {
+            text-align: right;
+        }
+        .message-received {
+            text-align: left;
+        }
+        .message-content {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+        }
+        .message-sent .message-content {
+            background-color: #007bff;
+            color: white;
+        }
+        .message-received .message-content {
+            background-color: #f1f1f1;
+            color: black;
+        }
+
+/*/////////////////////////////////*/
+/*/////////  Side Drawer  /////////*/
+/*/////////////////////////////////*/
+
+#side-drawer {
+  height: 100vh;
+  width: 336px;  /* Reference: https://forums.envato.com/t/standard-sidebar-width/75633 */
+  z-index: 1032;  /* z-index of standard bootstrap navbar is 1030 + 1 offset due to side-drawer-void */
+  top: 0;
+  left: -336px;
+  transition: left 0.25s ease;
+}
+
+#side-drawer-void {
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1031;  /* z-index of standard bootstrap navbar is 1030 */
+  background: rgba(0,0,0,.6);
+}
+

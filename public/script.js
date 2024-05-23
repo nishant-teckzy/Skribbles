@@ -3,11 +3,11 @@ socket = io(),
 toolBtns = document.querySelectorAll(".tool"),
 fillColor = document.querySelector("#fill-color"),
 sizeSlider = document.querySelector("#size-slider"),
-colorBtns = document.querySelectorAll(".colors .option"),
+colorBtns = document.querySelectorAll(".colors input[type=radio]"),
 colorPicker = document.querySelector("#color-picker"),
 clearCanvas = document.querySelector(".clear-canvas"),
 saveImg = document.querySelector(".save-img"),
-ctx = canvas.getContext("2d");
+ctx = canvas.getContext("2d",{ willReadFrequently: true });
 
 // global variables with default value
 let prevMouseX, prevMouseY, snapshot,
@@ -66,7 +66,7 @@ const drawTriangle = (offsetX,offsetY) => {
 }
 
 const startDraw = (offsetX,offsetY) => {
-    console.log("startDraw Method >>",offsetX,offsetY);
+   
     isDrawing = true;
     prevMouseX = offsetX; // passing current mouseX position as prevMouseX value
     prevMouseY = offsetY; // passing current mouseY position as prevMouseY value
@@ -79,7 +79,7 @@ const startDraw = (offsetX,offsetY) => {
 }
 
 const drawing = (offsetX,offsetY) => {
-    console.log("startDraw Method >>",offsetX,offsetY);
+    
     if(!isDrawing) return; // if isDrawing is false return from here
     ctx.putImageData(snapshot, 0, 0); // adding copied canvas data on to this canvas
 
@@ -108,13 +108,16 @@ toolBtns.forEach(btn => {
 sizeSlider.addEventListener("change", () => {socket.emit("brush_slider",sizeSlider.value)}); 
 
 colorBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-        let bgColor = window.getComputedStyle(btn).getPropertyValue("background-color");
-        socket.emit("color_changed",bgColor);
+    $(btn).change(function() {
+        if ($(this).is(':checked')) {
+            let bgColor= $(this).next('label').children().css("background-color");
+            socket.emit("color_changed",bgColor);
+        }
     });
 });
 
 colorPicker.addEventListener("change", () => {
+    $(".color-picker").css("background-color", colorPicker.value);
     socket.emit("color_changed",colorPicker.value);
 });
 
@@ -130,6 +133,16 @@ saveImg.addEventListener("click", () => {
 });
 
 $(document).ready(function(){
+
+    $("#chat-form").submit(function(e){
+        e.preventDefault();
+        let fields = $(this).serializeArray();
+        console.error(fields[0]);
+        var msg = $("<div/>",{class:"message message-received"});
+
+        $(".chat-body").append(msg.append($("<div/>",{class:"message-content"}).text(fields[0].value)));
+        
+    });
 
 })
 
@@ -157,12 +170,14 @@ socket.on("tool_changed",(selected_Tool)=>{
 });
 socket.on("color_changed",(selected_Color)=>{
 
-    document.querySelector(".options .selected").classList.remove("selected");
-    const p = [...colorBtns]
-        .find(btn => window.getComputedStyle(btn).backgroundColor === selectedColor);
-        if(p){p.classList.add("selected")}else{
-            colorPicker.parentElement.style.background = selectedColor;
-            colorPicker.parentElement.click();
+    document.querySelector(".colors input[type=radio]:checked").checked = false;
+    const p = [...document.querySelectorAll(".colors label span")]
+        .find(ele => window.getComputedStyle(ele).backgroundColor === selected_Color);
+        if(p){
+            document.querySelector("#"+p.classList[0]).checked = true
+        }else{
+            $(".color-picker").css({"background-color": selected_Color, "border": "2px solid black","transform": "scale(1.25)"});
+            colorPicker.style.background = selectedColor;
         }
  selectedColor = selected_Color;
 
@@ -171,3 +186,20 @@ socket.on("brush_slider",(sizeSlider_value)=>brushWidth = sizeSlider_value);
 socket.on("clear_canvas",()=>{
     ctx.clearRect(0, 0, canvas.width, canvas.height); // clearing whole canvas
 setCanvasBackground();});
+
+//Drawe Methods
+function openSideDrawer() {
+    document.getElementById("side-drawer").style.left = "0";
+    document.getElementById("side-drawer-void").classList.add("d-block");
+    document.getElementById("side-drawer-void").classList.remove("d-none");
+  }
+  
+  function closeSideDrawer() {
+    document.getElementById("side-drawer").style.left = "-336px";
+    document.getElementById("side-drawer-void").classList.add("d-none");
+    document.getElementById("side-drawer-void").classList.remove("d-block");
+  }
+  
+  window.openSideDrawer = openSideDrawer;
+  window.closeSideDrawer = closeSideDrawer;
+  
