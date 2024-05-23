@@ -74,6 +74,17 @@ exports.socketConnection = (server) => {
     
   });
 
+  socket.on("chat_message", (e) => {
+    console.log("chat_message >> ",e);
+    if(!socket.room_id || !rooms.hasOwnProperty(socket.room_id)){
+      //callback({status:"unknown_user"});
+      console.log("FAILED!!!");
+      socket.disconnect();
+    }
+    io.to(socket.room_id).emit("chat_message",e,socket.username);
+    
+  });
+
   socket.on("color_changed", (e) => {
     console.log("color_changed >> ",e);
     if(!socket.room_id || !rooms.hasOwnProperty(socket.room_id)){

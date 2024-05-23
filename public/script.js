@@ -138,10 +138,8 @@ $(document).ready(function(){
         e.preventDefault();
         let fields = $(this).serializeArray();
         console.error(fields[0]);
-        var msg = $("<div/>",{class:"message message-received"});
-
-        $(".chat-body").append(msg.append($("<div/>",{class:"message-content"}).text(fields[0].value)));
-        
+        if(fields[0].value)
+        socket.emit("chat_message",fields[0].value);
     });
 
 })
@@ -175,6 +173,7 @@ socket.on("color_changed",(selected_Color)=>{
         .find(ele => window.getComputedStyle(ele).backgroundColor === selected_Color);
         if(p){
             document.querySelector("#"+p.classList[0]).checked = true
+            $(".color-picker").css({"border": "","transform": ""});
         }else{
             $(".color-picker").css({"background-color": selected_Color, "border": "2px solid black","transform": "scale(1.25)"});
             colorPicker.style.background = selectedColor;
@@ -183,6 +182,15 @@ socket.on("color_changed",(selected_Color)=>{
 
 })
 socket.on("brush_slider",(sizeSlider_value)=>brushWidth = sizeSlider_value);
+socket.on("chat_message",(message,user)=>{
+    if(message && user){
+        var msg = $("<div/>",{class:"text-right"})
+		.append($("<h6/>",{class:"text-muted"}).append($("<small/>").text(user)))
+		.append($("<div/>",{class:"p-1 text-secondary"}).text(message));
+        $(".chat-body").append(msg);
+    }
+    
+});
 socket.on("clear_canvas",()=>{
     ctx.clearRect(0, 0, canvas.width, canvas.height); // clearing whole canvas
 setCanvasBackground();});
