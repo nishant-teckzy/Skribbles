@@ -13,17 +13,17 @@
     <!------------------------DRAWER--END-------------------------->
 
   <div class="container-fluid">
-  <div class="row bg-dark text-white">
-    <button class="btn btn-primary-outlined navbar-toggler" type="button" onclick="openSideDrawer()">
-      <span style='color:white;' class="material-symbols-outlined">menu</span>
+  <div class="row border border-primary text-white">
+    <button class="btn btn-sm btn-outline-primary navbar-toggler" type="button" onclick="openSideDrawer()">
+    <span class="material-symbols-outlined">menu</span>
     </button>
     <div class="col-3 text-left">
      <p>00:25</p>
     </div>
-    <div class="col-6 text-center">
-      <h5 class="text-muted">Lobby Id:<span id="lobby_id"><%= id %></span><i onclick="copyToClipboard('#lobby_id')" style='cursor: pointer; font-size:25px;' class="material-symbols-outlined">content_copy</i></h5>
+    <div class="col-6 text-center style=">
+      <span class="text-primary" style="vertical-align: middle;" id="lobby_id"><%= id %></span><i onclick="copyToClipboard('#lobby_id')" style='vertical-align: middle; cursor: pointer; font-size:25px;' class="text-primary material-symbols-outlined">content_copy</i>
     </div>
-    <div class="col-2 text-right">
+    <div class="col-2 text-right text-primary">
       <span class="spinner-grow spinner-grow-sm"></span><%= username %>
     </div>
   </div>

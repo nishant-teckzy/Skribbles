@@ -126,7 +126,7 @@ function onBrushSliderChanged(sizeSlider_value){
 }
 function onChatReceived(message,user){
     if (message && user) {
-        var msg = $("<div/>", { class: "text-right" })
+        var msg = $("<div/>", { class: "text-left" })
           .append(
             $("<h6/>", { class: "text-muted" }).append($("<small/>").text(user))
           )
@@ -143,6 +143,7 @@ function clearCanvas(){
 function onStopDrawing(){
     isDrawing = false;
 }
+
 
 toolBtns.forEach(btn => {
     if(!lobby){
@@ -184,6 +185,12 @@ $(document).ready(function(){
         console.error(fields[0]);
         if(fields[0].value)
         
+        var msg = $("<div/>",{class:"text-right mb-2"})
+		.append($("<h6/>",{class:"text-muted"}).append($("<small/>").text("Nishant")))
+		.append($("<div/>",{class:"p-1 text-secondary"}).text(fields[0].value));
+
+        $(".chat-body").append(msg);
+
         socket.emit("chat_message",fields[0].value);
     });
 

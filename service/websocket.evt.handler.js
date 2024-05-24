@@ -54,7 +54,7 @@ function onChatMessageReceived(arg){
       console.log("FAILED!!!");
       this.disconnect();
     }
-    this.broadcast.to(this.room_id).emit("chat_message",e,this.username);
+    this.broadcast.to(this.room_id).emit("chat_message",arg,this.username);
 }
 
 function onDrawingStart(offsetX,offsetY){
