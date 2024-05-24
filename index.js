@@ -4,7 +4,7 @@ const fs = require("fs");
 const bodyParser = require("body-parser");
 const login = require('./routes/login.routes');
 const server = require('http').createServer(app)
-const { socketConnection } = require('./utils/websocket.server');
+const { socketConnection } = require('./controllers/websocket.server.controller');
 socketConnection(server);
 const wsroutes = require('./routes/ws.routes');
 

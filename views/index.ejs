@@ -31,17 +31,14 @@
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-8">
+    <div class="col-8 mt-4">
       <canvas></canvas>
       <div class="row">
       <div class="col-12">
         
       </div>
       <div class="col-12">
-        <div  class="btn-group" role="group">
-          <button class="btn btn-outline-secondary clear-canvas">Clear Canvas</button>
-          <button class="btn btn-primary save-img">Save As Image</button>
-      </div>
+        
       </div>
     </div>
     </div>
@@ -51,10 +48,20 @@
     </div>
   </div>
 </div>
+
+<div  class="btn-group-vertical" id="draggable_tool" role="group">
+  <span id="draggable_toolheader" class="badge badge-secondary"><i   class="material-symbols-outlined">drag_handle</i></span>
+  <button class="btn btn-outline-primary clear-canvas"><i class="material-symbols-outlined">delete</i></button>
+  <button class="btn btn-outline-primary save-img"><i class="material-symbols-outlined">download</i></button>
+</div>
     <script src = "/socket.io/socket.io.js"></script>
+    <script src="draggable_element.js"></script>
     <script>
       var uname = "<%- username %>",uid="<%- id %>",lobby = "<%- lobby %>";
+      dragElement(document.getElementById("draggable_tool"));
     </script>
+     
     <script src="script.js"></script>
+    <script src="websocket.evt.handler.js"></script>
   </body>
 </html>

@@ -3,7 +3,7 @@
 *Implementation of JWKS controller
 *
 **/
-const { saveUser } = require('../utils/websocket.server');
+const { saveUser } = require('../controllers/websocket.server.controller');
 const crypto = require('crypto');
 const login = (req, res, next) => {
 	res.render('login');

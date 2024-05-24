@@ -5,7 +5,7 @@ fillColor = document.querySelector("#fill-color"),
 sizeSlider = document.querySelector("#size-slider"),
 colorBtns = document.querySelectorAll(".colors input[type=radio]"),
 colorPicker = document.querySelector("#color-picker"),
-clearCanvas = document.querySelector(".clear-canvas"),
+clearCanvasElement = document.querySelector(".clear-canvas"),
 saveImg = document.querySelector(".save-img"),
 ctx = canvas.getContext("2d",{ willReadFrequently: true });
 
@@ -98,6 +98,52 @@ const drawing = (offsetX,offsetY) => {
     }
 }
 
+function onToolChanged(selected_Tool){
+    document.querySelector(".options .active").classList.remove("active");
+    document.getElementById(selected_Tool).classList.add("active");
+    selectedTool = selected_Tool;
+}
+function onColorChanged(selected_Color){
+    document.querySelector(".colors input[type=radio]:checked").checked = false;
+    const p = [...document.querySelectorAll(".colors label span")].find(
+      (ele) => window.getComputedStyle(ele).backgroundColor === selected_Color
+    );
+    if (p) {
+      document.querySelector("#" + p.classList[0]).checked = true;
+      $(".color-picker").css({ border: "", transform: "" });
+    } else {
+      $(".color-picker").css({
+        "background-color": selected_Color,
+        border: "2px solid black",
+        transform: "scale(1.25)",
+      });
+      colorPicker.style.background = selectedColor;
+    }
+    selectedColor = selected_Color;
+}
+function onBrushSliderChanged(sizeSlider_value){
+    brushWidth = sizeSlider_value;
+}
+function onChatReceived(message,user){
+    if (message && user) {
+        var msg = $("<div/>", { class: "text-right" })
+          .append(
+            $("<h6/>", { class: "text-muted" }).append($("<small/>").text(user))
+          )
+          .append($("<div/>", { class: "p-1 text-secondary" }).text(message));
+        $(".chat-body").append(msg);
+      }
+}
+
+function clearCanvas(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setCanvasBackground();
+}
+
+function onStopDrawing(){
+    isDrawing = false;
+}
+
 toolBtns.forEach(btn => {
     if(!lobby){
         btn.addEventListener("click", () => { 
@@ -121,9 +167,7 @@ colorPicker.addEventListener("change", () => {
     socket.emit("color_changed",colorPicker.value);
 });
 
-clearCanvas.addEventListener("click", () => {
-    socket.emit("clear_canvas")
-});
+clearCanvasElement.addEventListener("click", () => {socket.emit("clear_canvas")});
 
 saveImg.addEventListener("click", () => {
     const link = document.createElement("a"); // creating <a> element
@@ -139,6 +183,7 @@ $(document).ready(function(){
         let fields = $(this).serializeArray();
         console.error(fields[0]);
         if(fields[0].value)
+        
         socket.emit("chat_message",fields[0].value);
     });
 
@@ -148,52 +193,11 @@ socket.emit("register",{"username":uname,"id":uid});
 if(lobby.trim()){
     socket.emit("join_lobby",{"username":uname,"id":uid,"lobby":lobby});
 }
-canvas.addEventListener("mousedown",
- (e)=>{socket.emit("startDraw",e.offsetX, e.offsetY)}
-//  startDraw
- );
-canvas.addEventListener("mousemove", 
-(e)=>{socket.emit("drawing",e.offsetX, e.offsetY)}
-// drawing
-);
+canvas.addEventListener("mousedown",(e)=>{socket.emit("startDraw",e.offsetX, e.offsetY)});
+canvas.addEventListener("mousemove", (e)=>{socket.emit("drawing",e.offsetX, e.offsetY)});
 canvas.addEventListener("mouseup", () => socket.emit("draw_stop"));
 
-socket.on("startDraw",startDraw);
-socket.on("drawing",drawing);
-socket.on("draw_stop",()=>{isDrawing = false;});
-socket.on("tool_changed",(selected_Tool)=>{
-    document.querySelector(".options .active").classList.remove("active");
-    document.getElementById(selected_Tool).classList.add("active");
-    selectedTool = selected_Tool;
-});
-socket.on("color_changed",(selected_Color)=>{
 
-    document.querySelector(".colors input[type=radio]:checked").checked = false;
-    const p = [...document.querySelectorAll(".colors label span")]
-        .find(ele => window.getComputedStyle(ele).backgroundColor === selected_Color);
-        if(p){
-            document.querySelector("#"+p.classList[0]).checked = true
-            $(".color-picker").css({"border": "","transform": ""});
-        }else{
-            $(".color-picker").css({"background-color": selected_Color, "border": "2px solid black","transform": "scale(1.25)"});
-            colorPicker.style.background = selectedColor;
-        }
- selectedColor = selected_Color;
-
-})
-socket.on("brush_slider",(sizeSlider_value)=>brushWidth = sizeSlider_value);
-socket.on("chat_message",(message,user)=>{
-    if(message && user){
-        var msg = $("<div/>",{class:"text-right"})
-		.append($("<h6/>",{class:"text-muted"}).append($("<small/>").text(user)))
-		.append($("<div/>",{class:"p-1 text-secondary"}).text(message));
-        $(".chat-body").append(msg);
-    }
-    
-});
-socket.on("clear_canvas",()=>{
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // clearing whole canvas
-setCanvasBackground();});
 
 //Drawe Methods
 function openSideDrawer() {
