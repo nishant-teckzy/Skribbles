@@ -145,8 +145,8 @@ function onStopDrawing(){
     isDrawing = false;
 }
 
-function onPlayerJoined(e){
-    let playerimg = $("<span/>",{class:"font-weight-bold"}).append($("<img/>",{src:defaultDP,class:"rounded-circle",width:"50",height:"50"}),e.username);
+function onPlayerJoined(username){
+    let playerimg = $("<span/>",{class:"font-weight-bold"}).append($("<img/>",{src:defaultDP,class:"rounded-circle",width:"50",height:"50"}),username);
     let cancel_icon = $("<span/>",).append($("<i/>",{class:"text-primary material-symbols-outlined",style:"vertical-align: middle; cursor: pointer; font-size:25px;"}).text("cancel"))
    let item = $('<li />', {class:"list-group-item d-flex justify-content-between align-items-center"}).append(playerimg,cancel_icon);
    item.appendTo("#player_list");
@@ -204,10 +204,9 @@ $(document).ready(function(){
 
 })
 
-socket.emit("register",{"username":uname,"id":uid});
-if(lobby.trim()){
-    socket.emit("join_lobby",{"username":uname,"id":uid,"lobby":lobby});
-}
+socket.emit("register",{"username":uname,"id":uid,"lobby":lobby},(res)=>{
+if(res.gameStarted){$("#myModal").modal({show: false});}
+});
 canvas.addEventListener("mousedown",(e)=>{socket.emit("startDraw",e.offsetX, e.offsetY)});
 canvas.addEventListener("mousemove", (e)=>{socket.emit("drawing",e.offsetX, e.offsetY)});
 canvas.addEventListener("mouseup", () => socket.emit("draw_stop"));

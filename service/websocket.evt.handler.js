@@ -1,32 +1,59 @@
 const rooms = {};
-function onLobbyJoining(arg){
-    console.log("join_lobby",arg);
-    
-    if(!arg.lobby || !rooms.hasOwnProperty(arg.lobby)){
-      //callback({status:"unknown_user"});
-      console.log("FAILED!!!");
-      this.disconnect();
-    }
-    this.username = arg.username;
-    this.room_id = arg.lobby;
-    this.join(arg.lobby);
-    this.server.to(this.room_id).emit("player_joined",arg);
+
+function onUserRegistration(arg,callback){
+  console.log("onUserRegistration:",arg);
+  console.log(arg,rooms);
+  let lobby = arg.lobby?arg.lobby:arg.id
+  let admin = false;
+  if(arg.id && !arg.lobby){
+    admin = true;
+    rooms[lobby].admin_id = this.id;
+  }
+  if(!lobby || !rooms.hasOwnProperty(lobby)){
+    //callback({status:"unknown_user"});
+    console.log("FAILED!!!");
+    this.disconnect();
+  }
+  this.username = arg.username;
+  this.room_id = lobby;
+  this.join(lobby);
+
+  if(admin){
+    callback({status:"200"});
+  }else{
+    callback({gameStarted:rooms[lobby].game_started});
+    this.server.to(this.room_id).emit("player_joined",arg.username);
+  }
+  
+}
+
+function onUserDisconnect(e){
 
 }
 
-function onUserRegistration(arg){
-    console.log("join_lobby",this.id);
-    console.log(arg,rooms);
-    
-    if(!arg.id || !rooms.hasOwnProperty(arg.id)){
-      //callback({status:"unknown_user"});
-      console.log("FAILED!!!");
-      this.disconnect();
-    }
-    this.username = arg.username;
-    this.room_id = arg.id;
-    this.join(arg.id);
+function onGameStart(arg){
+  if(!rooms.hasOwnProperty(this.room_id)){
+    console.error("Invalid User,User room doesnt exist");
+  }
+
+  rooms[this.room_id].game_started = true;
+
 }
+
+function onWordSelected(arg,callback){
+  if(!arg.selectedWord){
+    console.error("Selected Word is null or empty");
+  }
+  if(!rooms.hasOwnProperty(this.room_id)){
+    console.error("Invalid User,User room doesnt exist");
+  }
+  rooms[this.room_id].currentWord = arg.selectedWord;
+  callback({status:"200"});
+
+  
+}
+
+
 
 function onToolChanged(arg){
     console.log("tool_changed >> ",arg);
@@ -110,7 +137,6 @@ function onClearCanvas(e){
 
 module.exports = {
   onUserRegistration
-    ,onLobbyJoining
     ,onDrawingStart
     ,onDrawingStop
     ,onDrawing

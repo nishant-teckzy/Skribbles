@@ -9,7 +9,7 @@ exports.socketConnection = (server) => {
  // console.log("IO >> ",io);
    // socket.join(socket.request._query.id);
   socket.on("register", wsHandler.onUserRegistration);
-  socket.on("join_lobby",wsHandler.onLobbyJoining);
+  //socket.on("join_lobby",wsHandler.onLobbyJoining);
   socket.on("startDraw",wsHandler.onDrawingStart);
   socket.on("draw_stop",wsHandler.onDrawingStop);
   socket.on("drawing", wsHandler.onDrawing);
@@ -26,7 +26,17 @@ exports.socketConnection = (server) => {
 };
 
 exports.sendMessage = (roomId, key, message) => io.to(roomId).emit(key, message);
-exports.saveUser = (name,id,admin) => wsHandler.rooms[id] = {"uid":id,"uname":name,"is_admin":admin};
+exports.saveUser = (name,id,admin,lobby) => {
+  wsHandler.rooms[id] = {"uid":id,"uname":name,"is_admin":admin};
+  if(admin){
+    wsHandler.rooms[id].game_started = false;
+    wsHandler.rooms[id].users = [{uname:name,uid:id}];
+  }
+  if(lobby){
+    wsHandler.rooms[lobby].users = [...wsHandler.rooms[lobby].users,{uname:name,uid:id}]
+  }
+}
+
 
 
 exports.getRooms = () => io.sockets.adapter.rooms;

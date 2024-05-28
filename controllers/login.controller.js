@@ -14,12 +14,15 @@ const doLogin = (req, res, next) => {
 	 let uid =  buff.toString('hex');
 	 let admin = !(req.body.lobby.trim());
 	 console.log("isadmin",admin);
-	 saveUser(req.body.name,uid,admin);
+
+		saveUser(req.body.name,uid,admin,req.body.lobby);
 	 
-	 if(req.body.lobby.trim())
+	 
+	 
+	//  if(req.body.lobby.trim())
 	 res.render("index",{username:req.body.name,id:uid,lobby:req.body.lobby,"admin":admin});
-	else
-	res.render("index",{username:req.body.name,id:uid,lobby:"","admin":admin});
+	// else
+	// res.render("index",{username:req.body.name,id:uid,lobby:"","admin":admin});
 	  
 };
 
