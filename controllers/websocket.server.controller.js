@@ -26,7 +26,7 @@ exports.socketConnection = (server) => {
 };
 
 exports.sendMessage = (roomId, key, message) => io.to(roomId).emit(key, message);
-exports.saveUser = (name,id) => wsHandler.rooms[id] = id;
+exports.saveUser = (name,id,admin) => wsHandler.rooms[id] = {"uid":id,"uname":name,"is_admin":admin};
 
 
 exports.getRooms = () => io.sockets.adapter.rooms;

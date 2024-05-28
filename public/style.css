@@ -124,9 +124,7 @@ canvas{
 #draggable_tool {
   position: absolute;
   z-index: 9;
-  background-color: #f1f1f1;
   text-align: center;
-  border: 1px solid #d3d3d3;
 }
 
 #draggable_toolheader {
@@ -167,3 +165,23 @@ overflow-y: auto;
   background: rgba(0,0,0,.6);
 }
 
+.neumorphism {
+  background-color: #E4EBF5;
+}
+
+.neumporphism-flat {
+  background-color: #E4EBF5;
+ box-shadow: inset -5px -5px 9px rgba(255,255,255,0.45), inset 5px 5px 9px rgba(94,104,121,0.3) !important;
+}
+
+.neumporphism-inset {
+  background-color: #E4EBF5;
+  box-shadow: -5px -5px 9px rgba(255,255,255,0.45), 5px 5px 9px rgba(94,104,121,0.3) !important;
+}
+
+
+
+.circle{
+  border-radius: 50%;
+  box-shadow: -5px -5px 9px rgba(255,255,255,0.45), 5px 5px 9px rgba(94,104,121,0.3);
+}

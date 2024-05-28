@@ -2,6 +2,9 @@
     <div class="h-100 bg-white">
       <div class="p-2 bg-dark">
         <h1 class="text-white">Toolbar</h1>
+        <div class="">
+          <span class="text-primary" style="vertical-align: middle;" id="lobby_id"><%= id %></span><i onclick="copyToClipboard('#lobby_id')" style='vertical-align: middle; cursor: pointer; font-size:25px;' class="text-primary material-symbols-outlined">content_copy</i>
+        </div>
       </div>
       <%- include('paint_tools'); %>
       <!-- <ul class="list-group" onclick="closeSideDrawer()">

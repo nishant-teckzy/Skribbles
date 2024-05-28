@@ -10,3 +10,4 @@ socket.on("color_changed",onColorChanged);
 socket.on("brush_slider",onBrushSliderChanged);
 socket.on("chat_message", onChatReceived);
 socket.on("clear_canvas",clearCanvas);
+socket.on("player_joined",onPlayerJoined);

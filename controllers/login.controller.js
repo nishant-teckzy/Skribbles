@@ -12,12 +12,14 @@ const doLogin = (req, res, next) => {
 	console.log(req.body);
 	let buff = crypto.randomBytes(6);
 	 let uid =  buff.toString('hex');
-	 saveUser(req.body.name,uid);
+	 let admin = !(req.body.lobby.trim());
+	 console.log("isadmin",admin);
+	 saveUser(req.body.name,uid,admin);
 	 
 	 if(req.body.lobby.trim())
-	 res.render("index",{username:req.body.name,id:uid,lobby:req.body.lobby});
+	 res.render("index",{username:req.body.name,id:uid,lobby:req.body.lobby,"admin":admin});
 	else
-	res.render("index",{username:req.body.name,id:uid,lobby:""});
+	res.render("index",{username:req.body.name,id:uid,lobby:"","admin":admin});
 	  
 };
 

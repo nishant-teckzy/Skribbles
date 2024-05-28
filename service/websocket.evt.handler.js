@@ -10,6 +10,7 @@ function onLobbyJoining(arg){
     this.username = arg.username;
     this.room_id = arg.lobby;
     this.join(arg.lobby);
+    this.server.to(this.room_id).emit("player_joined",arg);
 
 }
 
@@ -28,23 +29,23 @@ function onUserRegistration(arg){
 }
 
 function onToolChanged(arg){
-    console.log("tool_changed >> ",e);
+    console.log("tool_changed >> ",arg);
     if(!this.room_id || !rooms.hasOwnProperty(this.room_id)){
       //callback({status:"unknown_user"});
       console.log("FAILED!!!");
       this.disconnect();
     }
-    this.server.to(this.room_id).emit("tool_changed",e);
+    this.server.to(this.room_id).emit("tool_changed",arg);
 }
 
 function onColorChanged(arg){
-    console.log("color_changed >> ",e);
+    console.log("color_changed >> ",arg);
     if(!this.room_id || !rooms.hasOwnProperty(this.room_id)){
       //callback({status:"unknown_user"});
       console.log("FAILED!!!");
       this.disconnect();
     }
-    this.server.to(this.room_id).emit("color_changed",e);
+    this.server.to(this.room_id).emit("color_changed",arg);
 }
 
 function onChatMessageReceived(arg){
