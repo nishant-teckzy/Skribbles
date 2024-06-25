@@ -58,18 +58,14 @@
 </div>
     <%- include('partials/lobby_modal'); %>
     <script src = "/socket.io/socket.io.js"></script>
-    <script src="draggable_element.js"></script>
+    <script src="/scribble/draggable_element.js"></script>
     <script>
       var uname = "<%- username %>",uid="<%- id %>",lobby = "<%- lobby %>";
       $("#myModal").modal();
       dragElement(document.getElementById("draggable_tool"));
     </script>
      
-    <script src="script.js"></script>
-    <script src="websocket.evt.handler.js"></script>
-
-
-
-
+    <script src="/scribble/script.js"></script>
+    <script src="/scribble/websocket.evt.handler.js"></script>
   </body>
 </html>
