@@ -19,18 +19,16 @@ const showMenu = (req, res, next) => {
 };
 
 const newRoom = (req, res, next) => {
-	//console.log(req.body);
+	console.log("NEW ROOM CREATION", req.body);
 	let buff = crypto.randomBytes(6);
 	 let uid =  buff.toString('hex');
 	 let admin = true;
 	 //console.log("isadmin",admin);
 
-		saveUser(req.body.name,uid,admin,req.body.lobby);
-	 
-	 
-	 
+		saveUser(req.body.name,uid,admin,req.body.lobby, req.body.round);
+
 	//  if(req.body.lobby.trim())
-	 res.render("index",{username:req.body.name, id:uid, lobby:"","admin":admin});
+	 res.render("index",{username:req.body.name, id:uid, lobby:"","admin":admin, "rounds":req.body.round});
 	// else
 	// res.render("index",{username:req.body.name,id:uid,lobby:"","admin":admin});
 	  

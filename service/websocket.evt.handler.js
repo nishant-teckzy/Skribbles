@@ -139,7 +139,7 @@ function onClearCanvas(e){
     this.server.to(this.room_id).emit("clear_canvas");
 }
 
-// New Code Added by Arun Sharma for the Game Start Event and handle the players one by one.
+// New Code Added by Arun Sharma for the Game Start Event and handle the player's turn one by one.
 function onGameStart(arg) {
   if (!rooms.hasOwnProperty(this.room_id)) {
     console.error("Invalid User, User room doesn't exist");
@@ -147,63 +147,94 @@ function onGameStart(arg) {
   }
 
   rooms[this.room_id].game_started = true;
-  rooms[this.room_id].currentTurn = 0;
-
+  //rooms[this.room_id].currentTurn = 0;
   this.server.to(this.room_id).emit('startGame', 0);
 
   setTimeout(() => {
     startTurn(this.room_id, this.server);
-  }, 3000); // 3 seconds countdown
+  }, 5000);
+
+
 }
 
-function startTurn(roomId, server) {
+async function startTurn(roomId, server) {
   try {
     const room = rooms[roomId];
     if (!room) {
       console.error(`Room ${roomId} not found.`);
       return;
     }
+    console.log("Room Round Length: ",room.rounds);
+    for (let i = 0; i < room.rounds; i++) {
 
-    room.currentTurn = (room.currentTurn + 1) % room.users.length;
-    
-    const currentPlayer = room.users[room.currentTurn];
+      server.to(roomId).emit('updateMessage', { round: i + 1, type: "roundUpdate" });
+      
+      for (let j = 0; j < room.users.length; j++) {
+        const currentPlayer = room.users[j];
 
-    if (!currentPlayer) {
-      console.error(`Current player not found in room ${roomId}.`);
-      return;
+        if (!currentPlayer) {
+          console.error(`Current player not found in room ${roomId}.`);
+          return;
+        }
+
+        const currentPlayerSocketId = userSocketMap.get(currentPlayer.uid);
+
+        // Enable drawing for the current player only
+        if (currentPlayerSocketId && server.sockets.sockets.get(currentPlayerSocketId)) {
+          server.sockets.sockets.get(currentPlayerSocketId).emit('enableDrawing', true);
+        } else {
+          console.error(`Socket for user ${currentPlayer.uid} not found.`);
+        }
+
+        // Disable drawing for all other players
+        room.users.forEach(user => {
+          if (user.uid !== currentPlayer.uid) {
+            const userSocketId = userSocketMap.get(user.uid);
+            if (userSocketId && server.sockets.sockets.get(userSocketId)) {
+              server.sockets.sockets.get(userSocketId).emit('enableDrawing', false);
+            } else {
+              console.error(`Socket for user ${user.uid} not found.`);
+            }
+          }
+        });
+
+        server.to(roomId).emit('updateTimer', { timeLeft: 25 });
+
+        // Wait for 25 seconds for the current player's turn
+        await new Promise(resolve => setTimeout(resolve, 25000));
+
+        // Disable drawing for the current player after their turn
+        if (currentPlayerSocketId && server.sockets.sockets.get(currentPlayerSocketId)) {
+          server.sockets.sockets.get(currentPlayerSocketId).emit('enableDrawing', false);
+        }
+
+        //Checking if this is the last User then don't emit the event
+        if(j+1 != room.users.length) {
+          server.to(roomId).emit('updateMessage', { round: 0, type: "userTurn" });
+        
+          // Pause for 10 seconds before the next player's turn
+          console.log(`Pausing for 10 seconds before the next player's turn`);
+          
+          await new Promise(resolve => setTimeout(resolve, 10000));
+        }
+          
+
+
+
+      }
+
+      server.to(roomId).emit('updateMessage', { round: i+2, type: "newRound" });
+
+
+      console.log(`Pausing for 10 seconds before next round`);
+      await new Promise(resolve => setTimeout(resolve, 10000));
     }
-
-    //server.to(roomId).emit('nextTurn', { currentPlayer: currentPlayer.uname, id: currentPlayer.uid, users: room.users });
-
-     const currentPlayerSocketId = userSocketMap.get(currentPlayer.uid);
-
-     // Enable drawing for the current player only
-     if (currentPlayerSocketId && server.sockets.sockets.get(currentPlayerSocketId)) {
-         server.sockets.sockets.get(currentPlayerSocketId).emit('enableDrawing', true);
-     } else {
-         console.error(`Socket for user ${currentPlayer.uid} not found.`);
-     }
-
-     // Disable drawing for all other players
-     room.users.forEach(user => {
-         if (user.uid !== currentPlayer.uid) {
-             const userSocketId = userSocketMap.get(user.uid);
-             if (userSocketId && server.sockets.sockets.get(userSocketId)) {
-                 server.sockets.sockets.get(userSocketId).emit('enableDrawing', false);
-             } else {
-                 console.error(`Socket for user ${user.uid} not found.`);
-             }
-         }
-     });
-
-  // Emit 'updateTimer' event to the room
-  server.to(roomId).emit('updateTimer', { timeLeft: 25 });
-
 
   } catch (error) {
     console.error('Error in startTurn function:', error);
   }
 }
+
 
 module.exports = {
   onUserRegistration

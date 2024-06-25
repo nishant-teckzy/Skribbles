@@ -276,29 +276,15 @@ socket.on('startGame', (data) => {
 
     console.log("Game Started --> ", data);
     $('#myModal').modal('hide');
-    let countdown = 3;
+    let countdown = 5;
     const countdownInterval = setInterval(() => {
         if (countdown > 0) {
-            $('#timer').text(`Game will start in ${countdown} seconds`);
+            $('#timer').text(`Game Starts in ${countdown} seconds`);
             countdown--;
         } else {
             clearInterval(countdownInterval);
         }
     }, 1000);
-});
-
-socket.on('nextTurn', (data) => {
-
-    console.log("Next Player Turn --> ", data);
-    data.users.forEach(user => {
-
-        if (user.uid == data.id) {
-            enableDrawing(true);
-        } else {
-            enableDrawing(false);
-        }
-    });
-
 });
 
 socket.on('enableDrawing', (data) => {
@@ -311,23 +297,57 @@ socket.on('enableDrawing', (data) => {
     }
 });
 
-function startTurn() {
-    let timeLeft = 25;
-    $('#timer').text(timeLeft);
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        if (timeLeft > 0) {
-            timeLeft--;
-            $('#timer').text(timeLeft);
+socket.on('updateTimer', function (data) {
+    $('#timer').text(data.timeLeft);
+    startCountdown(data.timeLeft);
+});
+
+function startCountdown(duration) {
+    let timeLeft = duration;
+
+    const timerInterval = setInterval(() => {
+      timeLeft -= 1;
+      $('#timer').text(timeLeft);
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+      }
+    }, 1000);
+  }
+
+
+
+  socket.on('updateMessage', function (data) {
+
+    if(data.type == "userTurn") {
+
+        let countdown = 10;
+        const countdownInterval = setInterval(() => {
+            if (countdown > 0) {
+                $('#timer').text(`New Player Turn Starts in ${countdown} seconds`);
+                countdown--;
+            } else {
+                clearInterval(countdownInterval);
+            }
+        }, 1000);
+
+    } else if(data.type == "newRound") {
+
+        let countdown = 10;
+        const countdownInterval = setInterval(() => {
+        if (countdown > 0) {
+            $('#timer').text(`Round ${data.round} Starts in ${countdown} seconds`);
+            countdown--;
         } else {
-            clearInterval(timerInterval);
+            clearInterval(countdownInterval);
         }
     }, 1000);
-}
 
-socket.on('updateTimer', function (timeLeft) {
-    document.getElementById('timer').innerText = timeLeft;
-});
+    }
+
+  });
+
+
 
 //Emit Start Game Event to every one once the game starts//
 document.getElementById('startGameButton').addEventListener('click', () => {

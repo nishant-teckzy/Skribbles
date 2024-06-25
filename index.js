@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.use("/scribble", express.static('public'));
-//app.use("/",router);
+//app.use("",ro/uter);
 app.use("/scribble",router);
 //app.ws("/",wsroutes);
 
