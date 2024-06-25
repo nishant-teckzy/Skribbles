@@ -17,9 +17,12 @@
     <div>
       <button class="neumporphism-inset btn btn-sm navbar-toggler" type="button" onclick="openSideDrawer()">
         <span style="color:#6d5dfc;" class="material-symbols-outlined">menu</span>
-        </button>
+      </button>
        
-        <span style="color:#9baacf; vertical-align: middle;" class=" text-center  ml-1"><span style="vertical-align: middle; color:#6d5dfc;" class="material-symbols-outlined">timer</span>25</span>
+      <span style="color:#9baacf; vertical-align: middle;" class=" text-center  ml-1">
+        <span style="vertical-align: middle; color:#6d5dfc;" class="material-symbols-outlined">timer</span>
+        <span id="timer">25</span>
+      </span>
         
         
     </div>
@@ -44,7 +47,7 @@
       <button class="neumporphism-flat btn mt-1 save-img"><i class="material-symbols-outlined">download</i></button>
     </div>
     <div class="col-8">
-      <canvas class="m-2 neumporphism-inset"></canvas>
+      <canvas id="drawingCanvas" class="m-2 neumporphism-inset"></canvas>
     </div>
     
     <div class="col-4">
@@ -64,5 +67,9 @@
      
     <script src="script.js"></script>
     <script src="websocket.evt.handler.js"></script>
+
+
+
+
   </body>
 </html>

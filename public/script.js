@@ -8,7 +8,9 @@ colorBtns = document.querySelectorAll(".colors input[type=radio]"),
 colorPicker = document.querySelector("#color-picker"),
 clearCanvasElement = document.querySelector(".clear-canvas"),
 saveImg = document.querySelector(".save-img"),
-ctx = canvas.getContext("2d",{ willReadFrequently: true });
+ctx = canvas.getContext("2d", {
+    willReadFrequently: true
+});
 
 // global variables with default value
 let prevMouseX, prevMouseY, snapshot,
@@ -17,14 +19,13 @@ selectedTool = "brush",
 brushWidth = 5,
 selectedColor = "#000";
 
-
 function copyToClipboard(element) {
     var $temp = $("<input>");
     $("body").append($temp);
     $temp.val($(element).text()).select();
     document.execCommand("copy");
     $temp.remove();
-  }
+}
 
 const setCanvasBackground = () => {
     // setting whole canvas background to white, so the downloaded img background will be white
@@ -40,16 +41,16 @@ window.addEventListener("load", () => {
     setCanvasBackground();
 });
 
-const drawRect = (offsetX,offsetY) => {
+const drawRect = (offsetX, offsetY) => {
     // if fillColor isn't checked draw a rect with border else draw rect with background
-    if(!fillColor.checked) {
+    if (!fillColor.checked) {
         // creating circle according to the mouse pointer
         return ctx.strokeRect(offsetX, offsetY, prevMouseX - offsetX, prevMouseY - offsetY);
     }
     ctx.fillRect(offsetX, offsetY, prevMouseX - offsetX, prevMouseY - offsetY);
 }
 
-const drawCircle = (offsetX,offsetY) => {
+const drawCircle = (offsetX, offsetY) => {
     ctx.beginPath(); // creating new path to draw circle
     // getting radius for circle according to the mouse pointer
     let radius = Math.sqrt(Math.pow((prevMouseX - offsetX), 2) + Math.pow((prevMouseY - offsetY), 2));
@@ -57,7 +58,7 @@ const drawCircle = (offsetX,offsetY) => {
     fillColor.checked ? ctx.fill() : ctx.stroke(); // if fillColor is checked fill circle else draw border circle
 }
 
-const drawTriangle = (offsetX,offsetY) => {
+const drawTriangle = (offsetX, offsetY) => {
     ctx.beginPath(); // creating new path to draw circle
     ctx.moveTo(prevMouseX, prevMouseY); // moving triangle to the mouse pointer
     ctx.lineTo(offsetX, offsetY); // creating first line according to the mouse pointer
@@ -66,8 +67,8 @@ const drawTriangle = (offsetX,offsetY) => {
     fillColor.checked ? ctx.fill() : ctx.stroke(); // if fillColor is checked fill triangle else draw border
 }
 
-const startDraw = (offsetX,offsetY) => {
-   
+const startDraw = (offsetX, offsetY) => {
+
     isDrawing = true;
     prevMouseX = offsetX; // passing current mouseX position as prevMouseX value
     prevMouseY = offsetY; // passing current mouseY position as prevMouseY value
@@ -79,104 +80,128 @@ const startDraw = (offsetX,offsetY) => {
     snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
 }
 
-const drawing = (offsetX,offsetY) => {
-    
-    if(!isDrawing) return; // if isDrawing is false return from here
+const drawing = (offsetX, offsetY) => {
+
+    if (!isDrawing)
+        return; // if isDrawing is false return from here
     ctx.putImageData(snapshot, 0, 0); // adding copied canvas data on to this canvas
 
-    if(selectedTool === "brush" || selectedTool === "eraser") {
-        // if selected tool is eraser then set strokeStyle to white 
+    if (selectedTool === "brush" || selectedTool === "eraser") {
+        // if selected tool is eraser then set strokeStyle to white
         // to paint white color on to the existing canvas content else set the stroke color to selected color
         ctx.strokeStyle = selectedTool === "eraser" ? "#fff" : selectedColor;
         ctx.lineTo(offsetX, offsetY); // creating line according to the mouse pointer
         ctx.stroke(); // drawing/filling line with color
-    } else if(selectedTool === "rectangle"){
-        drawRect(offsetX,offsetY);
-    } else if(selectedTool === "circle"){
-        drawCircle(offsetX,offsetY);
+    } else if (selectedTool === "rectangle") {
+        drawRect(offsetX, offsetY);
+    } else if (selectedTool === "circle") {
+        drawCircle(offsetX, offsetY);
     } else {
-        drawTriangle(offsetX,offsetY);
+        drawTriangle(offsetX, offsetY);
     }
 }
 
-function onToolChanged(selected_Tool){
+function onToolChanged(selected_Tool) {
     document.querySelector(".options .active").classList.remove("active");
     document.getElementById(selected_Tool).classList.add("active");
     selectedTool = selected_Tool;
 }
-function onColorChanged(selected_Color){
+function onColorChanged(selected_Color) {
     document.querySelector(".colors input[type=radio]:checked").checked = false;
     const p = [...document.querySelectorAll(".colors label span")].find(
-      (ele) => window.getComputedStyle(ele).backgroundColor === selected_Color
-    );
+        (ele) => window.getComputedStyle(ele).backgroundColor === selected_Color);
     if (p) {
-      document.querySelector("#" + p.classList[0]).checked = true;
-      $(".color-picker").css({ border: "", transform: "" });
+        document.querySelector("#" + p.classList[0]).checked = true;
+        $(".color-picker").css({
+            border: "",
+            transform: ""
+        });
     } else {
-      $(".color-picker").css({
-        "background-color": selected_Color,
-        border: "2px solid black",
-        transform: "scale(1.25)",
-      });
-      colorPicker.style.background = selectedColor;
+        $(".color-picker").css({
+            "background-color": selected_Color,
+            border: "2px solid black",
+            transform: "scale(1.25)",
+        });
+        colorPicker.style.background = selectedColor;
     }
     selectedColor = selected_Color;
 }
-function onBrushSliderChanged(sizeSlider_value){
+function onBrushSliderChanged(sizeSlider_value) {
     brushWidth = sizeSlider_value;
 }
-function onChatReceived(message,user){
+function onChatReceived(message, user) {
     if (message && user) {
-        var msg = $("<div/>", { class: "text-left" })
-          .append(
-            $("<h6/>", { class: "text-muted" }).append($("<small/>").text(user))
-          )
-          .append($("<div/>", { class: "p-1 text-secondary" }).text(message));
+        var msg = $("<div/>", {
+            class: "text-left"
+        })
+            .append(
+                $("<h6/>", {
+                    class: "text-muted"
+                }).append($("<small/>").text(user)))
+            .append($("<div/>", {
+                    class: "p-1 text-secondary"
+                }).text(message));
         $(".chat-body").append(msg);
-      }
+    }
 }
 
-function clearCanvas(){
+function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     setCanvasBackground();
 }
 
-function onStopDrawing(){
+function onStopDrawing() {
     isDrawing = false;
 }
 
-function onPlayerJoined(username){
-    let playerimg = $("<span/>",{class:"font-weight-bold"}).append($("<img/>",{src:defaultDP,class:"rounded-circle",width:"50",height:"50"}),username);
-    let cancel_icon = $("<span/>",).append($("<i/>",{class:"text-primary material-symbols-outlined",style:"vertical-align: middle; cursor: pointer; font-size:25px;"}).text("cancel"))
-   let item = $('<li />', {class:"list-group-item d-flex justify-content-between align-items-center"}).append(playerimg,cancel_icon);
-   item.appendTo("#player_list");
+function onPlayerJoined(username) {
+    let playerimg = $("<span/>", {
+        class: "font-weight-bold"
+    }).append($("<img/>", {
+                src: defaultDP,
+                class: "rounded-circle",
+                width: "50",
+                height: "50"
+            }), username);
+    let cancel_icon = $("<span/>", ).append($("<i/>", {
+                class: "text-primary material-symbols-outlined",
+                style: "vertical-align: middle; cursor: pointer; font-size:25px;"
+            }).text("cancel"))
+        let item = $('<li />', {
+            class: "list-group-item d-flex justify-content-between align-items-center"
+        }).append(playerimg, cancel_icon);
+    item.appendTo("#player_list");
 }
 
-
 toolBtns.forEach(btn => {
-    if(!lobby){
-        btn.addEventListener("click", () => { 
-        socket.emit("tool_changed",btn.id);
-    });}
+    if (!lobby) {
+        btn.addEventListener("click", () => {
+            socket.emit("tool_changed", btn.id);
+        });
+    }
 });
 
-sizeSlider.addEventListener("change", () => {socket.emit("brush_slider",sizeSlider.value)}); 
+sizeSlider.addEventListener("change", () => {
+    socket.emit("brush_slider", sizeSlider.value)
+});
 
 colorBtns.forEach(btn => {
-    $(btn).change(function() {
+    $(btn).change(function () {
         if ($(this).is(':checked')) {
-            let bgColor= $(this).next('label').children().css("background-color");
-            socket.emit("color_changed",bgColor);
+            let bgColor = $(this).next('label').children().css("background-color");
+            socket.emit("color_changed", bgColor);
         }
     });
 });
 
 colorPicker.addEventListener("change", () => {
     $(".color-picker").css("background-color", colorPicker.value);
-    socket.emit("color_changed",colorPicker.value);
+    socket.emit("color_changed", colorPicker.value);
 });
 
-clearCanvasElement.addEventListener("click", () => {socket.emit("clear_canvas")});
+clearCanvasElement.addEventListener("click", () => {
+    socket.emit("clear_canvas");
+});
 
 saveImg.addEventListener("click", () => {
     const link = document.createElement("a"); // creating <a> element
@@ -185,47 +210,131 @@ saveImg.addEventListener("click", () => {
     link.click(); // clicking link to download image
 });
 
-$(document).ready(function(){
+$(document).ready(function () {
 
-    $("#chat-form").submit(function(e){
+    $("#chat-form").submit(function (e) {
         e.preventDefault();
         let fields = $(this).serializeArray();
         console.error(fields[0]);
-        if(fields[0].value)
-        
-        var msg = $("<div/>",{class:"text-right mb-2"})
-		.append($("<h6/>",{class:"text-muted"}).append($("<small/>").text(uname)))
-		.append($("<div/>",{class:"p-1 text-secondary"}).text(fields[0].value));
+        if (fields[0].value)
+
+            var msg = $("<div/>", {
+                class: "text-right mb-2"
+            })
+                .append($("<h6/>", {
+                        class: "text-muted"
+                    }).append($("<small/>").text(uname)))
+                .append($("<div/>", {
+                        class: "p-1 text-secondary"
+                    }).text(fields[0].value));
 
         $(".chat-body").append(msg);
 
-        socket.emit("chat_message",fields[0].value);
+        socket.emit("chat_message", fields[0].value);
     });
 
 })
 
-socket.emit("register",{"username":uname,"id":uid,"lobby":lobby},(res)=>{
-if(res.gameStarted){$("#myModal").modal({show: false});}
+socket.emit("register", {
+    "username": uname,
+    "id": uid,
+    "lobby": lobby
+}, (res) => {
+    if (res.gameStarted) {
+        $("#myModal").modal({
+            show: false
+        });
+    }
 });
-canvas.addEventListener("mousedown",(e)=>{socket.emit("startDraw",e.offsetX, e.offsetY)});
-canvas.addEventListener("mousemove", (e)=>{socket.emit("drawing",e.offsetX, e.offsetY)});
+canvas.addEventListener("mousedown", (e) => {
+    socket.emit("startDraw", e.offsetX, e.offsetY)
+});
+canvas.addEventListener("mousemove", (e) => {
+    socket.emit("drawing", e.offsetX, e.offsetY)
+});
 canvas.addEventListener("mouseup", () => socket.emit("draw_stop"));
-
-
 
 //Drawe Methods
 function openSideDrawer() {
     document.getElementById("side-drawer").style.left = "0";
     document.getElementById("side-drawer-void").classList.add("d-block");
     document.getElementById("side-drawer-void").classList.remove("d-none");
-  }
-  
-  function closeSideDrawer() {
+}
+
+function closeSideDrawer() {
     document.getElementById("side-drawer").style.left = "-336px";
     document.getElementById("side-drawer-void").classList.add("d-none");
     document.getElementById("side-drawer-void").classList.remove("d-block");
-  }
-  
-  window.openSideDrawer = openSideDrawer;
-  window.closeSideDrawer = closeSideDrawer;
-  
+}
+
+/**
+ * @author arunSharma
+ * @description Implementing the Players turn-by-turn code.
+ */
+
+socket.on('startGame', (data) => {
+
+    console.log("Game Started --> ", data);
+    $('#myModal').modal('hide');
+    let countdown = 3;
+    const countdownInterval = setInterval(() => {
+        if (countdown > 0) {
+            $('#timer').text(`Game will start in ${countdown} seconds`);
+            countdown--;
+        } else {
+            clearInterval(countdownInterval);
+        }
+    }, 1000);
+});
+
+socket.on('nextTurn', (data) => {
+
+    console.log("Next Player Turn --> ", data);
+    data.users.forEach(user => {
+
+        if (user.uid == data.id) {
+            enableDrawing(true);
+        } else {
+            enableDrawing(false);
+        }
+    });
+
+});
+
+socket.on('enableDrawing', (data) => {
+    console.log("Enable Drawing: ", data);
+    var drawingCanvas = document.getElementById('drawingCanvas');
+    if (data) {
+        drawingCanvas.style.pointerEvents = 'auto'; // Enable drawing canvas
+    } else {
+        drawingCanvas.style.pointerEvents = 'none'; // Disable drawing canvas
+    }
+});
+
+function startTurn() {
+    let timeLeft = 25;
+    $('#timer').text(timeLeft);
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        if (timeLeft > 0) {
+            timeLeft--;
+            $('#timer').text(timeLeft);
+        } else {
+            clearInterval(timerInterval);
+        }
+    }, 1000);
+}
+
+socket.on('updateTimer', function (timeLeft) {
+    document.getElementById('timer').innerText = timeLeft;
+});
+
+//Emit Start Game Event to every one once the game starts//
+document.getElementById('startGameButton').addEventListener('click', () => {
+    socket.emit('startGame');
+});
+
+/*--------------------------End Code----------------------------*/
+
+window.openSideDrawer = openSideDrawer;
+window.closeSideDrawer = closeSideDrawer;

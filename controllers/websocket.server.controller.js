@@ -19,6 +19,9 @@ exports.socketConnection = (server) => {
   socket.on("brush_slider", wsHandler.onBrushSizeChanged);
   socket.on("clear_canvas",wsHandler.onClearCanvas);
 
+  // New Code for the Game Start Event
+  socket.on("startGame", wsHandler.onGameStart.bind(socket));
+
     socket.on('disconnect', () => {
       console.info(`Client disconnected [id=${socket.id}]`);
     });
