@@ -54,11 +54,13 @@
   </div>
 </div>
     <%- include('partials/lobby_modal'); %>
+    <%- include('partials/choose_word_modal'); %>
     <script src = "/socket.io/socket.io.js"></script>
     <script src="draggable_element.js"></script>
     <script>
       var uname = "<%- username %>",uid="<%- id %>",lobby = "<%- lobby %>";
-      $("#myModal").modal();
+      //$("#myModal").modal();
+      $("#wordChooserModal").modal();
       dragElement(document.getElementById("draggable_tool"));
     </script>
      

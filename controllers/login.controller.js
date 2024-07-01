@@ -15,7 +15,7 @@ const doLogin = (req, res, next) => {
 	 let admin = !(req.body.lobby.trim());
 	 console.log("isadmin",admin);
 
-		saveUser(req.body.name,uid,admin,req.body.lobby);
+	saveUser(req.body.name,uid,admin,req.body.lobby);
 	 
 	 
 	 

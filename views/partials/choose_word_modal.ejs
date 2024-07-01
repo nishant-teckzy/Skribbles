@@ -1,0 +1,43 @@
+ <!-- The Modal -->
+ <div class="modal fade" id="wordChooserModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <div style="line-height: 0.38;">
+                <h2 class="">Choose a word</h2>
+               <p class="text-muted"><small>It's your turn...</small></p>  
+               </div>
+               <div class="text-right">
+                <input class="form-control" id="myInput" type="text" placeholder="Search..">
+               </div>
+               
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="container-fluid">
+              <div id="choosewrdList" class=" list-group list-group-horizontal">
+                <button type="button" class="list-group-item list-group-item-action">Dapibus ac facilisis in</button>
+                <button type="button" class="list-group-item list-group-item-action">Morbi leo risus</button>
+                <button type="button" class="list-group-item list-group-item-action">Porta ac consectetur ac</button>
+                <button type="button" class="list-group-item list-group-item-action" disabled>Vestibulum at eros</button>
+              </div>
+            
+               </div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer" style="vertical-align: middle;">
+            <% if(admin){ %>
+                 <button type="button" id="gameStart" class="btn btn-secondary" data-dismiss="modal">Start</button>
+                <% }else{ %>
+                <p class="text-muted">Waiting for admin to start <span class="spinner-grow spinner-grow-sm text-primary"></span></p>
+                <% } %>
+          
+        </div>
+        
+      </div>
+    </div>
+  </div>

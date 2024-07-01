@@ -202,6 +202,8 @@ $(document).ready(function(){
         socket.emit("chat_message",fields[0].value);
     });
 
+    $("#gameStart").click((evt)=>{socket.emit("onGameStart");})
+
 })
 
 socket.emit("register",{"username":uname,"id":uid,"lobby":lobby},(res)=>{

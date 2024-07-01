@@ -2,8 +2,8 @@ const rooms = {};
 
 function onUserRegistration(arg,callback){
   console.log("onUserRegistration:",arg);
-  console.log(arg,rooms);
-  let lobby = arg.lobby?arg.lobby:arg.id
+  
+  let lobby = arg.lobby?arg.lobby:arg.id;
   let admin = false;
   if(arg.id && !arg.lobby){
     admin = true;
@@ -18,6 +18,13 @@ function onUserRegistration(arg,callback){
   this.room_id = lobby;
   this.join(lobby);
 
+  rooms[this.room_id].users.find((o, i) => {
+    if (o.uname == arg.username && o.uid == arg.id) {
+      rooms[this.room_id].users[i].socketId = this.id;
+        return true;
+    }
+});
+console.log(rooms[this.room_id].users);
   if(admin){
     callback({status:"200"});
   }else{
@@ -31,12 +38,25 @@ function onUserDisconnect(e){
 
 }
 
+function switchTurns(followedBy,roomId){
+  if(!followedBy){
+    rooms[roomId].users[0].it = true;
+    let painterSocket  = this.server.in(rooms[roomId].users[0].socketId).fetchSockets();
+    painterSocket.emit("chooseWord","horse,rose,tiger");
+    painterSocket.emit("playerChoosing",painterSocket.username);
+  }
+}
+
 function onGameStart(arg){
   if(!rooms.hasOwnProperty(this.room_id)){
     console.error("Invalid User,User room doesnt exist");
   }
 
   rooms[this.room_id].game_started = true;
+  rooms[this.room_id].round = 1;
+  rooms[this.room_id].max_round = 3;
+  rooms[this.room_id].users.sort((a, b) => 0.5 - Math.random());
+  switchTurns(null,this.room_id);
 
 }
 
@@ -144,4 +164,6 @@ module.exports = {
     ,onChatMessageReceived
     ,onColorChanged
     ,onBrushSizeChanged
+    ,onGameStart
+    ,onWordSelected
     ,onClearCanvas,rooms};
