@@ -11,3 +11,8 @@ socket.on("brush_slider",onBrushSliderChanged);
 socket.on("chat_message", onChatReceived);
 socket.on("clear_canvas",clearCanvas);
 socket.on("player_joined",onPlayerJoined);
+
+socket.on("startGame", startGame);
+socket.on("enableDrawing", enableDrawing);
+socket.on("updateTimer", startCountdown);
+socket.on("updateMessage", updateMessage);

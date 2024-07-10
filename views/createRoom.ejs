@@ -3,18 +3,19 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Login</title>
+    <title>Create Room</title>
     <%- include('partials/head'); %>
 </head>
 <body>
     <div class="container">
-        <h2>Join the Room</h2>
-        <form action="/scribble/room" method="post">
+        <h2>Create Room</h2>
+        <form action="/scribble/newRoom" method="post">
           <div class="form-group">
             <label for="name">Name:</label>
             <input type="text" class="form-control" id="name" placeholder="Enter Name" name="name" required>
-            <label for="lobby">Lobby Code:</label>
-            <input type="text" class="form-control" id="lobby" placeholder="Enter lobby id" name="lobby">
+            <label for="round">Total Rounds:</label>
+            <input type="text" class="form-control" id="round" placeholder="Number of Rounds" name="round" required>
+
           </div>
           <button type="submit" class="btn btn-primary">Start Game</button>
         </form>

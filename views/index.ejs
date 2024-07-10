@@ -17,15 +17,29 @@
     <div>
       <button class="neumporphism-inset btn btn-sm navbar-toggler" type="button" onclick="openSideDrawer()">
         <span style="color:#6d5dfc;" class="material-symbols-outlined">menu</span>
-        </button>
+      </button>
        
-        <span style="color:#9baacf; vertical-align: middle;" class=" text-center  ml-1"><span style="vertical-align: middle; color:#6d5dfc;" class="material-symbols-outlined">timer</span>25</span>
+      <span style="color:#9baacf; vertical-align: middle;" class=" text-center  ml-1">
+        <span style="vertical-align: middle; color:#6d5dfc;" class="material-symbols-outlined">timer</span>
+        <span id="timer">25</span>
+      </span>
+
+      <span style="color:#9baacf; vertical-align: middle;" class=" text-center  ml-3">
+        <span style="vertical-align: middle; color:#6d5dfc;" class="material-symbols-outlined">poker_chip
+        </span>
+        4
+      </span>
         
         
     </div>
    
     <div class="text-primary ">
+
       <span class="spinner-grow spinner-grow-sm"></span><%= username %>
+      <button class="btn btn-sm" type="button">
+        <span class="material-symbols-outlined">person</span>
+      </button>
+
       <button class="neumporphism-inset btn btn-sm" type="button">
         <span class="material-symbols-outlined">settings</span>
         </button>
@@ -44,7 +58,7 @@
       <button class="neumporphism-flat btn mt-1 save-img"><i class="material-symbols-outlined">download</i></button>
     </div>
     <div class="col-8">
-      <canvas class="m-2 neumporphism-inset"></canvas>
+      <canvas id="drawingCanvas" class="m-2 neumporphism-inset"></canvas>
     </div>
     
     <div class="col-4">
@@ -56,7 +70,7 @@
     <%- include('partials/lobby_modal'); %>
     <%- include('partials/choose_word_modal'); %>
     <script src = "/socket.io/socket.io.js"></script>
-    <script src="draggable_element.js"></script>
+    <script src="/scribble/draggable_element.js"></script>
     <script>
       var uname = "<%- username %>",uid="<%- id %>",lobby = "<%- lobby %>";
       //$("#myModal").modal();
@@ -64,7 +78,7 @@
       dragElement(document.getElementById("draggable_tool"));
     </script>
      
-    <script src="script.js"></script>
-    <script src="websocket.evt.handler.js"></script>
+    <script src="/scribble/script.js"></script>
+    <script src="/scribble/websocket.evt.handler.js"></script>
   </body>
 </html>

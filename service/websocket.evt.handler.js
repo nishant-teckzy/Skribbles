@@ -1,9 +1,11 @@
 const rooms = {};
 
-function onUserRegistration(arg,callback){
-  console.log("onUserRegistration:",arg);
-  
-  let lobby = arg.lobby?arg.lobby:arg.id;
+
+function onUserRegistration(arg,callback) {
+  //console.log("onUserRegistration:",arg);
+  //console.log(arg,rooms);
+  let lobby = arg.lobby?arg.lobby:arg.id
+
   let admin = false;
   if(arg.id && !arg.lobby){
     admin = true;
@@ -23,18 +25,20 @@ function onUserRegistration(arg,callback){
       rooms[this.room_id].users[i].socketId = this.id;
         return true;
     }
-});
+  });
+
 console.log(rooms[this.room_id].users);
   if(admin){
     callback({status:"200"});
-  }else{
+  }else {
     callback({gameStarted:rooms[lobby].game_started});
     this.server.to(this.room_id).emit("player_joined",arg.username);
   }
   
 }
 
-function onUserDisconnect(e){
+
+function onUserDisconnect(e) {
 
 }
 
@@ -47,18 +51,7 @@ function switchTurns(followedBy,roomId){
   }
 }
 
-function onGameStart(arg){
-  if(!rooms.hasOwnProperty(this.room_id)){
-    console.error("Invalid User,User room doesnt exist");
-  }
 
-  rooms[this.room_id].game_started = true;
-  rooms[this.room_id].round = 1;
-  rooms[this.room_id].max_round = 3;
-  rooms[this.room_id].users.sort((a, b) => 0.5 - Math.random());
-  switchTurns(null,this.room_id);
-
-}
 
 function onWordSelected(arg,callback){
   if(!arg.selectedWord){
@@ -70,13 +63,12 @@ function onWordSelected(arg,callback){
   rooms[this.room_id].currentWord = arg.selectedWord;
   callback({status:"200"});
 
-  
 }
 
 
 
 function onToolChanged(arg){
-    console.log("tool_changed >> ",arg);
+    //console.log("tool_changed >> ",arg);
     if(!this.room_id || !rooms.hasOwnProperty(this.room_id)){
       //callback({status:"unknown_user"});
       console.log("FAILED!!!");
@@ -86,7 +78,7 @@ function onToolChanged(arg){
 }
 
 function onColorChanged(arg){
-    console.log("color_changed >> ",arg);
+    //console.log("color_changed >> ",arg);
     if(!this.room_id || !rooms.hasOwnProperty(this.room_id)){
       //callback({status:"unknown_user"});
       console.log("FAILED!!!");
@@ -96,7 +88,7 @@ function onColorChanged(arg){
 }
 
 function onChatMessageReceived(arg){
-    console.log("chat_message >> ",arg);
+    //console.log("chat_message >> ",arg);
     if(!this.room_id || !rooms.hasOwnProperty(this.room_id)){
       //callback({status:"unknown_user"});
       console.log("FAILED!!!");
@@ -136,7 +128,7 @@ function onDrawing(offsetX,offsetY){
 }
 
 function onBrushSizeChanged(e){
-    console.log("brush_slider >> ",e);
+    //console.log("brush_slider >> ",e);
     if(!this.room_id || !rooms.hasOwnProperty(this.room_id)){
       //callback({status:"unknown_user"});
       console.log("FAILED!!!");
@@ -146,7 +138,7 @@ function onBrushSizeChanged(e){
 }
 
 function onClearCanvas(e){
-    console.log("clear_canvas >> ",e);
+    //console.log("clear_canvas >> ",e);
     if(!this.room_id || !rooms.hasOwnProperty(this.room_id)){
       //callback({status:"unknown_user"});
       console.log("FAILED!!!");
@@ -154,6 +146,146 @@ function onClearCanvas(e){
     }
     this.server.to(this.room_id).emit("clear_canvas");
 }
+
+// New Code Added by Arun Sharma for the Game Start Event and handle the player's turn one by one.
+function onGameStart(arg) {
+  if (!rooms.hasOwnProperty(this.room_id)) {
+    console.error("Invalid User, User room doesn't exist");
+    return;
+  }
+
+  rooms[this.room_id].game_started = true;
+  //rooms[this.room_id].currentTurn = 0;
+  this.server.to(this.room_id).emit('startGame', 0);
+
+  setTimeout(() => {
+    startTurn(this.room_id, this.server);
+  }, 5000);
+
+}
+
+/*
+async function startTurn(roomId, server) {
+  try {
+    const room = rooms[roomId];
+    if (!room) {
+      return;
+    }
+    for (let i = 0; i < room.rounds; i++) {
+
+      server.to(roomId).emit('updateMessage', { round: i + 1, type: "roundUpdate" });
+
+      for (let j = 0; j < room.users.length; j++) {
+        const currentPlayer = room.users[j];
+
+        if (!currentPlayer) {
+          console.error(`Current player not found in room ${roomId}.`);
+          return;
+        }
+
+        if(currentPlayer.socketId) {
+          server.to(currentPlayer.socketId).emit('enableDrawing', true);
+        } else {
+          console.error(`Socket for user ${currentPlayer.uid} not found.`);
+        }
+
+        // Disable drawing for all other players
+        room.users.forEach(user => {
+          if (user.uid !== currentPlayer.uid) {
+
+              if(user.socketId) {
+                server.to(user.socketId).emit('enableDrawing', false);
+              } else {
+                console.error(`Socket for user ${currentPlayer.uid} not found.`);
+              }
+          }
+        });
+
+        server.to(roomId).emit('updateTimer', { timeLeft: 25 });
+
+        // Wait for 25 seconds for the current player's turn
+        await new Promise(resolve => setTimeout(resolve, 25000));
+
+        if(currentPlayer.socketId) {
+          server.to(currentPlayer.socketId).emit('enableDrawing', false);
+        }
+
+        // Checking if this is the last User then don't emit the event
+        if(j+1 != room.users.length) {
+          server.to(roomId).emit('updateMessage', { round: 0, type: "userTurn" });
+        
+          // Pause for 10 seconds before the next player's turn          
+          await new Promise(resolve => setTimeout(resolve, 10000));
+        }
+      }
+
+      server.to(roomId).emit('updateMessage', { round: i+2, type: "newRound" });
+
+      await new Promise(resolve => setTimeout(resolve, 10000));
+    }
+
+  } catch (error) {
+    console.error('Error in startTurn function:', error);
+  }
+} */
+
+  async function startTurn(roomId, server) {
+    try {
+      const room = rooms[roomId];
+      if (!room) {
+        return;
+      }
+  
+      const wait = (time) => new Promise(resolve => setTimeout(resolve, time));
+  
+      for (let roundIndex = 0; roundIndex < room.rounds; roundIndex++) {
+  
+        server.to(roomId).emit('updateMessage', { round: roundIndex + 1, type: "roundUpdate" });
+  
+        for (let [userIndex, currentPlayer] of room.users.entries()) {
+          if (!currentPlayer) {
+            console.error(`Current player not found in room ${roomId}.`);
+            return;
+          }
+  
+          if (currentPlayer.socketId) {
+            server.to(currentPlayer.socketId).emit('enableDrawing', true);
+          } else {
+            console.error(`Socket for user ${currentPlayer.uid} not found.`);
+          }
+  
+          room.users
+            .filter(user => user.uid !== currentPlayer.uid)
+            .forEach(user => {
+              if (user.socketId) {
+                server.to(user.socketId).emit('enableDrawing', false);
+              } else {
+                console.error(`Socket for user ${user.uid} not found.`);
+              }
+            });
+  
+          server.to(roomId).emit('updateTimer', { timeLeft: 25 });
+  
+          await wait(25000);
+  
+          if (currentPlayer.socketId) {
+            server.to(currentPlayer.socketId).emit('enableDrawing', false);
+          }
+  
+          if (userIndex + 1 !== room.users.length) {
+            server.to(roomId).emit('updateMessage', { round: 0, type: "userTurn" });
+            await wait(10000);
+          }
+        }
+  
+        server.to(roomId).emit('updateMessage', { round: roundIndex + 2, type: "newRound" });
+        await wait(10000);
+      }
+  
+    } catch (error) {
+      console.error('Error in startTurn function:', error);
+    }
+  }
 
 module.exports = {
   onUserRegistration
@@ -164,6 +296,7 @@ module.exports = {
     ,onChatMessageReceived
     ,onColorChanged
     ,onBrushSizeChanged
+    ,onClearCanvas
     ,onGameStart
     ,onWordSelected
     ,onClearCanvas,rooms};

@@ -6,7 +6,7 @@
         <!-- Modal Header -->
         <div class="modal-header">
             <div style="line-height: 0.38;">
-                <h2 class="">Huntsmen Lobby</h2>
+                <h2 class="">Skribble Lobby</h2>
                 <h6><span class="text-primary" style="vertical-align: middle;" id="modal_lobby_id"><%= id %></span><i onclick="copyToClipboard('#modal_lobby_id')" style='vertical-align: middle; cursor: pointer; font-size:25px;' class="text-primary material-symbols-outlined">content_copy</i></h6>
                <p class="text-muted"><small>Waiting for players...</small></p>  
                </div>
@@ -19,25 +19,28 @@
         <!-- Modal body -->
         <div class="modal-body">
             <div class="container-fluid">
-                
-                 <ul id="player_list" class="list-group list-group-flush">
+                <ul id="player_list" class="list-group list-group-flush">
                    <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span class="font-weight-bold pr-1">
                         <img width="50" height="50" src="icons/dp.png" class="rounded-circle"/>Conqueror
                     </span>
-                   <span>
-                    <i style='vertical-align: middle; cursor: pointer; font-size:25px;' class="text-primary material-symbols-outlined">cancel</i>
-                </span>
-            </li>
+                    <span>
+                      <i style='vertical-align: middle; cursor: pointer; font-size:25px;' class="text-primary material-symbols-outlined">cancel</i>
+                    </span>
+                  </li>
                   
-                 </ul>
-               </div>
+                </ul>
+            </div>
         </div>
         
         <!-- Modal footer -->
         <div class="modal-footer" style="vertical-align: middle;">
             <% if(admin){ %>
+<<<<<<< HEAD
+                 <button id="startGameButton" type="button" class="btn btn-secondary" data-dismiss="modal">Start</button>
+=======
                  <button type="button" id="gameStart" class="btn btn-secondary" data-dismiss="modal">Start</button>
+>>>>>>> main
                 <% }else{ %>
                 <p class="text-muted">Waiting for admin to start <span class="spinner-grow spinner-grow-sm text-primary"></span></p>
                 <% } %>
@@ -47,3 +50,4 @@
       </div>
     </div>
   </div>
+  
