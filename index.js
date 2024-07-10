@@ -11,8 +11,9 @@ const wsroutes = require('./routes/ws.routes');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
+app.use("/", express.static('public'));
 app.use("/scribble", express.static('public'));
-//app.use("",ro/uter);
+app.use("/",router);
 app.use("/scribble",router);
 //app.ws("/",wsroutes);
 

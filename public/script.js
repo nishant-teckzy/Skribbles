@@ -231,6 +231,8 @@ $(document).ready(function () {
         $(".chat-body").append(msg);
 
         socket.emit("chat_message", fields[0].value);
+
+        $('#message-input').val(''); // Clear the input after sending
     });
 
 })
@@ -272,11 +274,10 @@ function closeSideDrawer() {
  * @description Implementing the Players turn-by-turn code.
  */
 
-socket.on('startGame', (data) => {
-
-    console.log("Game Started --> ", data);
+// Added the Event in the Interceptor Class
+function startGame(data) {
     $('#myModal').modal('hide');
-    let countdown = 5;
+    let countdown = 10;
     const countdownInterval = setInterval(() => {
         if (countdown > 0) {
             $('#timer').text(`Game Starts in ${countdown} seconds`);
@@ -285,25 +286,19 @@ socket.on('startGame', (data) => {
             clearInterval(countdownInterval);
         }
     }, 1000);
-});
+}
 
-socket.on('enableDrawing', (data) => {
-    console.log("Enable Drawing: ", data);
-    var drawingCanvas = document.getElementById('drawingCanvas');
+function enableDrawing(data) {
     if (data) {
-        drawingCanvas.style.pointerEvents = 'auto'; // Enable drawing canvas
+        document.getElementById('drawingCanvas').style.pointerEvents = 'auto';
     } else {
-        drawingCanvas.style.pointerEvents = 'none'; // Disable drawing canvas
+        document.getElementById('drawingCanvas').style.pointerEvents = 'none';
     }
-});
+}
 
-socket.on('updateTimer', function (data) {
+function startCountdown(data) {
     $('#timer').text(data.timeLeft);
-    startCountdown(data.timeLeft);
-});
-
-function startCountdown(duration) {
-    let timeLeft = duration;
+    let timeLeft = data.timeLeft;
 
     const timerInterval = setInterval(() => {
       timeLeft -= 1;
@@ -315,12 +310,8 @@ function startCountdown(duration) {
     }, 1000);
   }
 
-
-
-  socket.on('updateMessage', function (data) {
-
+  function updateMessage(data) {
     if(data.type == "userTurn") {
-
         let countdown = 10;
         const countdownInterval = setInterval(() => {
             if (countdown > 0) {
@@ -342,17 +333,17 @@ function startCountdown(duration) {
             clearInterval(countdownInterval);
         }
     }, 1000);
-
     }
 
-  });
-
+  }
 
 
 //Emit Start Game Event to every one once the game starts//
-document.getElementById('startGameButton').addEventListener('click', () => {
+$("#startGameButton").on("click", () => {
     socket.emit('startGame');
 });
+
+
 
 /*--------------------------End Code----------------------------*/
 

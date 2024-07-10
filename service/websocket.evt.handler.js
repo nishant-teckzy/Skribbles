@@ -1,8 +1,6 @@
 const rooms = {};
 
-const userSocketMap = new Map();
-
-function onUserRegistration(arg,callback){
+function onUserRegistration(arg,callback) {
   //console.log("onUserRegistration:",arg);
   //console.log(arg,rooms);
   let lobby = arg.lobby?arg.lobby:arg.id
@@ -20,29 +18,25 @@ function onUserRegistration(arg,callback){
   this.room_id = lobby;
   this.join(lobby);
 
-  userSocketMap.set(arg.id, this.id);
+  rooms[this.room_id].users.find((o, i) => {
+    if (o.uname == arg.username && o.uid == arg.id) {
+      rooms[this.room_id].users[i].socketId = this.id;
+        return true;
+    }
+  });
 
-  if(admin){
+  if(admin) {
     callback({status:"200"});
-  }else{
+  }else {
     callback({gameStarted:rooms[lobby].game_started});
     this.server.to(this.room_id).emit("player_joined",arg.username);
   }
   
 }
 
-function onUserDisconnect(e){
+function onUserDisconnect(e) {
 
 }
-/*
-function onGameStart(arg){
-  if(!rooms.hasOwnProperty(this.room_id)){
-    console.error("Invalid User,User room doesnt exist");
-  }
-
-  rooms[this.room_id].game_started = true;
-
-}*/
 
 function onWordSelected(arg,callback){
   if(!arg.selectedWord){
@@ -54,7 +48,6 @@ function onWordSelected(arg,callback){
   rooms[this.room_id].currentWord = arg.selectedWord;
   callback({status:"200"});
 
-  
 }
 
 
@@ -154,21 +147,19 @@ function onGameStart(arg) {
     startTurn(this.room_id, this.server);
   }, 5000);
 
-
 }
 
+/*
 async function startTurn(roomId, server) {
   try {
     const room = rooms[roomId];
     if (!room) {
-      console.error(`Room ${roomId} not found.`);
       return;
     }
-    console.log("Room Round Length: ",room.rounds);
     for (let i = 0; i < room.rounds; i++) {
 
       server.to(roomId).emit('updateMessage', { round: i + 1, type: "roundUpdate" });
-      
+
       for (let j = 0; j < room.users.length; j++) {
         const currentPlayer = room.users[j];
 
@@ -177,11 +168,8 @@ async function startTurn(roomId, server) {
           return;
         }
 
-        const currentPlayerSocketId = userSocketMap.get(currentPlayer.uid);
-
-        // Enable drawing for the current player only
-        if (currentPlayerSocketId && server.sockets.sockets.get(currentPlayerSocketId)) {
-          server.sockets.sockets.get(currentPlayerSocketId).emit('enableDrawing', true);
+        if(currentPlayer.socketId) {
+          server.to(currentPlayer.socketId).emit('enableDrawing', true);
         } else {
           console.error(`Socket for user ${currentPlayer.uid} not found.`);
         }
@@ -189,12 +177,12 @@ async function startTurn(roomId, server) {
         // Disable drawing for all other players
         room.users.forEach(user => {
           if (user.uid !== currentPlayer.uid) {
-            const userSocketId = userSocketMap.get(user.uid);
-            if (userSocketId && server.sockets.sockets.get(userSocketId)) {
-              server.sockets.sockets.get(userSocketId).emit('enableDrawing', false);
-            } else {
-              console.error(`Socket for user ${user.uid} not found.`);
-            }
+
+              if(user.socketId) {
+                server.to(user.socketId).emit('enableDrawing', false);
+              } else {
+                console.error(`Socket for user ${currentPlayer.uid} not found.`);
+              }
           }
         });
 
@@ -203,38 +191,86 @@ async function startTurn(roomId, server) {
         // Wait for 25 seconds for the current player's turn
         await new Promise(resolve => setTimeout(resolve, 25000));
 
-        // Disable drawing for the current player after their turn
-        if (currentPlayerSocketId && server.sockets.sockets.get(currentPlayerSocketId)) {
-          server.sockets.sockets.get(currentPlayerSocketId).emit('enableDrawing', false);
+        if(currentPlayer.socketId) {
+          server.to(currentPlayer.socketId).emit('enableDrawing', false);
         }
 
-        //Checking if this is the last User then don't emit the event
+        // Checking if this is the last User then don't emit the event
         if(j+1 != room.users.length) {
           server.to(roomId).emit('updateMessage', { round: 0, type: "userTurn" });
         
-          // Pause for 10 seconds before the next player's turn
-          console.log(`Pausing for 10 seconds before the next player's turn`);
-          
+          // Pause for 10 seconds before the next player's turn          
           await new Promise(resolve => setTimeout(resolve, 10000));
         }
-          
-
-
-
       }
 
       server.to(roomId).emit('updateMessage', { round: i+2, type: "newRound" });
 
-
-      console.log(`Pausing for 10 seconds before next round`);
       await new Promise(resolve => setTimeout(resolve, 10000));
     }
 
   } catch (error) {
     console.error('Error in startTurn function:', error);
   }
-}
+} */
 
+  async function startTurn(roomId, server) {
+    try {
+      const room = rooms[roomId];
+      if (!room) {
+        return;
+      }
+  
+      const wait = (time) => new Promise(resolve => setTimeout(resolve, time));
+  
+      for (let roundIndex = 0; roundIndex < room.rounds; roundIndex++) {
+  
+        server.to(roomId).emit('updateMessage', { round: roundIndex + 1, type: "roundUpdate" });
+  
+        for (let [userIndex, currentPlayer] of room.users.entries()) {
+          if (!currentPlayer) {
+            console.error(`Current player not found in room ${roomId}.`);
+            return;
+          }
+  
+          if (currentPlayer.socketId) {
+            server.to(currentPlayer.socketId).emit('enableDrawing', true);
+          } else {
+            console.error(`Socket for user ${currentPlayer.uid} not found.`);
+          }
+  
+          room.users
+            .filter(user => user.uid !== currentPlayer.uid)
+            .forEach(user => {
+              if (user.socketId) {
+                server.to(user.socketId).emit('enableDrawing', false);
+              } else {
+                console.error(`Socket for user ${user.uid} not found.`);
+              }
+            });
+  
+          server.to(roomId).emit('updateTimer', { timeLeft: 25 });
+  
+          await wait(25000);
+  
+          if (currentPlayer.socketId) {
+            server.to(currentPlayer.socketId).emit('enableDrawing', false);
+          }
+  
+          if (userIndex + 1 !== room.users.length) {
+            server.to(roomId).emit('updateMessage', { round: 0, type: "userTurn" });
+            await wait(10000);
+          }
+        }
+  
+        server.to(roomId).emit('updateMessage', { round: roundIndex + 2, type: "newRound" });
+        await wait(10000);
+      }
+  
+    } catch (error) {
+      console.error('Error in startTurn function:', error);
+    }
+  }
 
 module.exports = {
   onUserRegistration
