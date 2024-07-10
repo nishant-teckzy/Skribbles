@@ -1,9 +1,11 @@
 const rooms = {};
 
+
 function onUserRegistration(arg,callback) {
   //console.log("onUserRegistration:",arg);
   //console.log(arg,rooms);
   let lobby = arg.lobby?arg.lobby:arg.id
+
   let admin = false;
   if(arg.id && !arg.lobby){
     admin = true;
@@ -25,7 +27,8 @@ function onUserRegistration(arg,callback) {
     }
   });
 
-  if(admin) {
+console.log(rooms[this.room_id].users);
+  if(admin){
     callback({status:"200"});
   }else {
     callback({gameStarted:rooms[lobby].game_started});
@@ -34,9 +37,21 @@ function onUserRegistration(arg,callback) {
   
 }
 
+
 function onUserDisconnect(e) {
 
 }
+
+function switchTurns(followedBy,roomId){
+  if(!followedBy){
+    rooms[roomId].users[0].it = true;
+    let painterSocket  = this.server.in(rooms[roomId].users[0].socketId).fetchSockets();
+    painterSocket.emit("chooseWord","horse,rose,tiger");
+    painterSocket.emit("playerChoosing",painterSocket.username);
+  }
+}
+
+
 
 function onWordSelected(arg,callback){
   if(!arg.selectedWord){
@@ -281,5 +296,7 @@ module.exports = {
     ,onChatMessageReceived
     ,onColorChanged
     ,onBrushSizeChanged
-    ,onClearCanvas,
-    onGameStart, rooms};
+    ,onClearCanvas
+    ,onGameStart
+    ,onWordSelected
+    ,onClearCanvas,rooms};

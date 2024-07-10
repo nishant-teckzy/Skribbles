@@ -235,6 +235,8 @@ $(document).ready(function () {
         $('#message-input').val(''); // Clear the input after sending
     });
 
+    $("#gameStart").click((evt)=>{socket.emit("onGameStart");})
+
 })
 
 socket.emit("register", {

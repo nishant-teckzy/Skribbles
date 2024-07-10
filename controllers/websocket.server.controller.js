@@ -18,6 +18,7 @@ exports.socketConnection = (server) => {
   socket.on("color_changed",wsHandler.onColorChanged);
   socket.on("brush_slider", wsHandler.onBrushSizeChanged);
   socket.on("clear_canvas",wsHandler.onClearCanvas);
+  socket.on("onGameStart",wsHandler.onGameStart);
 
   // New Code for the Game Start Event
   socket.on("startGame", wsHandler.onGameStart.bind(socket));
