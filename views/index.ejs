@@ -73,8 +73,8 @@
     <script src="/scribble/draggable_element.js"></script>
     <script>
       var uname = "<%- username %>",uid="<%- id %>",lobby = "<%- lobby %>";
-      //$("#myModal").modal();
-      $("#wordChooserModal").modal();
+      $("#myModal").modal('show');
+      $("#wordChooserModal").modal('hide');
       dragElement(document.getElementById("draggable_tool"));
     </script>
      

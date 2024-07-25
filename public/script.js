@@ -277,8 +277,15 @@ function closeSideDrawer() {
  */
 
 // Added the Event in the Interceptor Class
-function startGame(data) {
+
+function closeLobbyModal() {
     $('#myModal').modal('hide');
+    $('#wordChooserModal').modal('show');
+}
+
+function startGame(data) {
+    //$('#myModal').modal('hide');
+    $('#wordChooserModal').modal('hide');
     let countdown = 10;
     const countdownInterval = setInterval(() => {
         if (countdown > 0) {
@@ -342,8 +349,18 @@ function startCountdown(data) {
 
 //Emit Start Game Event to every one once the game starts//
 $("#startGameButton").on("click", () => {
+
+    // After the Game Starts Emit the event to open the "choose_Word_Modal.ejs"
+    socket.emit('closeLobbyModal');
+});
+
+
+//Fetching the ChooseWordModal evts
+$("#gameStart").on("click", () => {
+    // After the Game Starts Emit the event to open the "choose_Word_Modal.ejs"
     socket.emit('startGame');
 });
+
 
 
 

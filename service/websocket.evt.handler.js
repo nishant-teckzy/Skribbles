@@ -148,6 +148,14 @@ function onClearCanvas(e){
 }
 
 // New Code Added by Arun Sharma for the Game Start Event and handle the player's turn one by one.
+
+function closeLobbyModal(e) {
+
+  console.log("Printing E ---> ", e);
+  this.server.to(this.room_id).emit('closeLobbyModal');
+
+}
+
 function onGameStart(arg) {
   if (!rooms.hasOwnProperty(this.room_id)) {
     console.error("Invalid User, User room doesn't exist");
@@ -163,72 +171,6 @@ function onGameStart(arg) {
   }, 5000);
 
 }
-
-/*
-async function startTurn(roomId, server) {
-  try {
-    const room = rooms[roomId];
-    if (!room) {
-      return;
-    }
-    for (let i = 0; i < room.rounds; i++) {
-
-      server.to(roomId).emit('updateMessage', { round: i + 1, type: "roundUpdate" });
-
-      for (let j = 0; j < room.users.length; j++) {
-        const currentPlayer = room.users[j];
-
-        if (!currentPlayer) {
-          console.error(`Current player not found in room ${roomId}.`);
-          return;
-        }
-
-        if(currentPlayer.socketId) {
-          server.to(currentPlayer.socketId).emit('enableDrawing', true);
-        } else {
-          console.error(`Socket for user ${currentPlayer.uid} not found.`);
-        }
-
-        // Disable drawing for all other players
-        room.users.forEach(user => {
-          if (user.uid !== currentPlayer.uid) {
-
-              if(user.socketId) {
-                server.to(user.socketId).emit('enableDrawing', false);
-              } else {
-                console.error(`Socket for user ${currentPlayer.uid} not found.`);
-              }
-          }
-        });
-
-        server.to(roomId).emit('updateTimer', { timeLeft: 25 });
-
-        // Wait for 25 seconds for the current player's turn
-        await new Promise(resolve => setTimeout(resolve, 25000));
-
-        if(currentPlayer.socketId) {
-          server.to(currentPlayer.socketId).emit('enableDrawing', false);
-        }
-
-        // Checking if this is the last User then don't emit the event
-        if(j+1 != room.users.length) {
-          server.to(roomId).emit('updateMessage', { round: 0, type: "userTurn" });
-        
-          // Pause for 10 seconds before the next player's turn          
-          await new Promise(resolve => setTimeout(resolve, 10000));
-        }
-      }
-
-      server.to(roomId).emit('updateMessage', { round: i+2, type: "newRound" });
-
-      await new Promise(resolve => setTimeout(resolve, 10000));
-    }
-
-  } catch (error) {
-    console.error('Error in startTurn function:', error);
-  }
-} */
-
   async function startTurn(roomId, server) {
     try {
       const room = rooms[roomId];
@@ -299,4 +241,6 @@ module.exports = {
     ,onClearCanvas
     ,onGameStart
     ,onWordSelected
-    ,onClearCanvas,rooms};
+    ,onClearCanvas
+    ,closeLobbyModal
+    ,rooms};
