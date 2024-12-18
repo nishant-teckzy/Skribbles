@@ -5,11 +5,9 @@ const wsHandler = require('../service/websocket.evt.handler');
 exports.socketConnection = (server) => {
   io = require('socket.io')(server);
   io.on('connection', (socket) => {
-  console.info(`connected Socket [id=${socket.id}]`);
- // console.log("IO >> ",io);
-   // socket.join(socket.request._query.id);
+  //console.info(`connected Socket [id=${socket.id}]`);
+
   socket.on("register", wsHandler.onUserRegistration);
-  //socket.on("join_lobby",wsHandler.onLobbyJoining);
   socket.on("startDraw",wsHandler.onDrawingStart);
   socket.on("draw_stop",wsHandler.onDrawingStop);
   socket.on("drawing", wsHandler.onDrawing);
@@ -18,7 +16,10 @@ exports.socketConnection = (server) => {
   socket.on("color_changed",wsHandler.onColorChanged);
   socket.on("brush_slider", wsHandler.onBrushSizeChanged);
   socket.on("clear_canvas",wsHandler.onClearCanvas);
-  socket.on("onGameStart",wsHandler.onGameStart);
+
+  // New Code for the Game Start Event
+  socket.on("startGame", wsHandler.onGameStart.bind(socket));
+  socket.on("closeLobbyModal", wsHandler.closeLobbyModal);
 
     socket.on('disconnect', () => {
       console.info(`Client disconnected [id=${socket.id}]`);
@@ -27,13 +28,15 @@ exports.socketConnection = (server) => {
 };
 
 exports.sendMessage = (roomId, key, message) => io.to(roomId).emit(key, message);
-exports.saveUser = (name,id,admin,lobby) => {
-  wsHandler.rooms[id] = {"uid":id,"uname":name,"is_admin":admin};
-  if(admin){
+
+exports.saveUser = (name,id,admin,lobby, rounds) => {
+  wsHandler.rooms[id] = {"uid":id,"uname":name,"is_admin":admin, "rounds":rounds};
+  if(admin) {
+    console.log("Save Users --> ", wsHandler.rooms)
     wsHandler.rooms[id].game_started = false;
     wsHandler.rooms[id].users = [{uname:name,uid:id}];
   }
-  if(lobby){
+  if(lobby) {
     wsHandler.rooms[lobby].users = [...wsHandler.rooms[lobby].users,{uname:name,uid:id}]
   }
 }

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Login</title>
+    <%- include('partials/head'); %>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="m-5 neumporphism-inset text-center">
+                    <div id="createRoom" style="height: 60vh;">
+                        <h4 class="p-5">Create Room</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="m-5 neumporphism-inset text-center">
+                    <div id="joinRoom" style="height: 60vh;">
+                        <h4 class="p-5">Join Room</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('createRoom').addEventListener('click', function() {
+            window.location.href = '/scribble/createRoom';
+        });
+
+        document.getElementById('joinRoom').addEventListener('click', function() {
+            window.location.href = '/scribble/joinRoom';
+        });
+    </script>
+</body>
+</html>
